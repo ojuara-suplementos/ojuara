@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme as default — OJUARA aesthetic */
+    --background: 0 0% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Brand red — vibrant, OJUARA-like */
+    --primary: 5 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 5 90% 62%;
+    --marquee: 5 70% 38%;
+
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 62%;
+
+    --accent: 5 85% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 5 85% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 0 0% 16%;
+    --input: 0 0% 14%;
+    --ring: 5 85% 55%;
+
+    --radius: 0.5rem;
+
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 4%) 0%, hsl(0 0% 8%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
+    --gradient-dark: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 4%) 100%);
+    --gradient-overlay: linear-gradient(90deg, hsl(0 0% 0% / 0.92) 0%, hsl(0 0% 0% / 0.5) 60%, hsl(0 0% 0% / 0.1) 100%);
+
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
+    --shadow-md: 0 3px 10px hsl(0 0% 0% / 0.35);
+    --shadow-lg: 0 10px 24px hsl(0 0% 0% / 0.45);
+    --shadow-glow: 0 4px 14px hsl(var(--primary) / 0.22);
+
+    --transition-base: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 5 85% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 5 85% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Oswald', 'Inter', system-ui, sans-serif;
+    @apply font-bold tracking-tight uppercase;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Oswald', 'Inter', sans-serif; letter-spacing: -0.01em; }
+  .gradient-hero { background: var(--gradient-hero); }
+  .gradient-primary { background: var(--gradient-primary); }
+  .gradient-dark { background: var(--gradient-dark); }
+  .gradient-overlay { background: var(--gradient-overlay); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-card { box-shadow: var(--shadow-md); }
+  .shadow-card-hover { box-shadow: var(--shadow-lg); }
+  .transition-base { transition: var(--transition-base); }
+  .transition-fast { transition: var(--transition-fast); }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .underline-accent {
+    position: relative;
+  }
+  .underline-accent::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 3px;
+    background-color: hsl(var(--primary));
+    pointer-events: none;
+  }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes highlight-pulse {
+  0% { background-color: hsl(var(--primary) / 0.18); }
+  100% { background-color: transparent; }
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes soft-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-slide-in-right { animation: slide-in-right 250ms cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-slide-in-left { animation: slide-in-left 250ms cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-fade-in { animation: fade-in 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-soft-in { animation: soft-in 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-modal-in { animation: modal-in 200ms cubic-bezier(0.4, 0, 0.2, 1); }
+.animate-page-in { animation: page-in 380ms cubic-bezier(0.22, 0.61, 0.36, 1); }
+.animate-pulse-glow { animation: pulse-glow 1.6s ease-in-out infinite; }
+.animate-highlight { animation: highlight-pulse 1s ease-out; }
+/* Hover discreto padrão dos cards */
+.card-hover {
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(0 0% 22%) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-hover:hover { transform: none; }
+  .animate-page-in, .animate-fade-in, .animate-soft-in, .animate-modal-in { animation: none; }
+}
+
+
+/* Hide native number input spin buttons globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
