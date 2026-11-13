@@ -1,4 +1,5 @@
 # Requested navigation updates
+- [x] Update Vite to 6.4.6; existing React SWC plugin remains compatible; dependency locks synchronized, clean npm installation and 13 tests passed, automatic production build OK.
 - [x] Show Cor for accessories and Sabor for other products; update admin labels only.
 - [x] Display Kits only in the side menu when an active kit exists (tested absent/present/removed with controlled responses).
 - [x] Set tablet/desktop navigation to Categorias, Ofertas, Creatina, Whey e proteínas.
