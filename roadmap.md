@@ -1,4 +1,8 @@
 # Requested navigation updates
+- [x] Implement route metadata, structured data, crawler controls and build-generated public catalog sitemap without changing store behavior.
+- [x] Verify SEO with tests, live public pages, mobile checks and automatic production build; document hosting and freshness limitations in SEO.md.
+- [x] Use the confirmed production domain https://ojuarasuplementos.com/ across SEO URLs, sitemap and structured data.
+- [ ] Complete launch SEO: awaiting approved share-sized HTTPS images, deployment access and external Search Console/Business Profile setup. Static sitemap/product metadata refresh on deployment, not automatically after admin edits.
 - [x] Update Vite to 6.4.6; existing React SWC plugin remains compatible; dependency locks synchronized, clean npm installation and 13 tests passed, automatic production build OK.
 - [x] Show Cor for accessories and Sabor for other products; update admin labels only.
 - [x] Display Kits only in the side menu when an active kit exists (tested absent/present/removed with controlled responses).
