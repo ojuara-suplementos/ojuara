@@ -1,5 +1,5 @@
 // Substitua pelo número real (formato internacional, sem + ou espaços)
-export const WHATSAPP_NUMBER = "5575999475942";
+export const WHATSAPP_NUMBER = "5575998566403";
 export const SITE_NAME = "OJUARA SUPLEMENTOS";
 export const SITE_SHORT = "OJUARA";
 export const INSTAGRAM_URL = "https://www.instagram.com/ojuara.suplementos?obrf=ZjN3N3M5d2ZqMjVx";
