@@ -279,20 +279,29 @@ const ProductList = () => {
   // }, [products]);
 
   const allFlavors = useMemo(() => {
-    const set = new Set<string>();
+    const flavors = new Map<string, string>();
 
     products.forEach((p) =>
       p.product_variants.forEach((v) => {
         if (v.flavor) {
           v.flavor.split(",").forEach((flavor) => {
             const trimmed = flavor.trim();
-            if (trimmed) set.add(trimmed);
+
+            if (trimmed) {
+              const normalized = trimmed.toLowerCase();
+
+              if (!flavors.has(normalized)) {
+                flavors.set(normalized, trimmed);
+              }
+            }
           });
         }
       }),
     );
 
-    return Array.from(set).sort();
+    return Array.from(flavors.values()).sort((a, b) =>
+      a.localeCompare(b, "pt-BR", { sensitivity: "base" }),
+    );
   }, [products]);
 
   const filtered = useMemo(() => {
@@ -318,15 +327,21 @@ const ProductList = () => {
     //       (v) => v.flavor && selectedFlavors.includes(v.flavor),
     //     ),
     //   );
-    if (selectedFlavors.length)
+    if (selectedFlavors.length) {
+      const normalizedFlavors = new Set(
+        selectedFlavors.map((f) => f.trim().toLowerCase()),
+      );
+
       list = list.filter((p) =>
         p.product_variants.some((v) =>
           v.flavor
             ?.split(",")
-            .map((flavor) => flavor.trim())
-            .some((flavor) => selectedFlavors.includes(flavor)),
+            .some((flavor) =>
+              normalizedFlavors.has(flavor.trim().toLowerCase()),
+            ),
         ),
       );
+    }
     if (priceRange) {
       const [min, max] = priceRange;
       list = list.filter((p) => {

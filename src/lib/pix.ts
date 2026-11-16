@@ -87,7 +87,10 @@ function identifyKeyType(key: string): PixPayloadValidation["keyType"] {
   if (/^\+55\d{10,11}$/.test(key)) return "phone";
   if (/^\d{11}$/.test(key)) return "cpf";
   if (/^\d{14}$/.test(key)) return "cnpj";
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key)) return "random";
+  if (
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key)
+  )
+    return "random";
   return "unknown";
 }
 
@@ -100,30 +103,58 @@ export function validatePixPayload(
   const parsed = parseTlv(payload);
   errors.push(...parsed.errors);
 
-  const expectedOrder = ["00", "26", "52", "53", "54", "58", "59", "60", "62", "63"];
-  if (parsed.fields.map((field) => field.id).join(",") !== expectedOrder.join(",")) {
+  const expectedOrder = [
+    "00",
+    "26",
+    "52",
+    "53",
+    "54",
+    "58",
+    "59",
+    "60",
+    "62",
+    "63",
+  ];
+  if (
+    parsed.fields.map((field) => field.id).join(",") !== expectedOrder.join(",")
+  ) {
     errors.push("Ordem dos campos raiz inválida.");
   }
 
   const fields = new Map(parsed.fields.map((field) => [field.id, field]));
-  if (fields.get("00")?.value !== "01") errors.push("Payload Format Indicator inválido.");
-  if (fields.get("52")?.value !== "0000") errors.push("Merchant Category Code inválido.");
-  if (fields.get("53")?.value !== "986") errors.push("Transaction Currency inválida.");
+  if (fields.get("00")?.value !== "01")
+    errors.push("Payload Format Indicator inválido.");
+  if (fields.get("52")?.value !== "0000")
+    errors.push("Merchant Category Code inválido.");
+  if (fields.get("53")?.value !== "986")
+    errors.push("Transaction Currency inválida.");
   if (fields.get("58")?.value !== "BR") errors.push("Country Code inválido.");
 
   const expectedAmount = expected.amount.toFixed(2);
-  if (fields.get("54")?.value !== expectedAmount) errors.push("Transaction Amount divergente.");
+  if (fields.get("54")?.value !== expectedAmount)
+    errors.push("Transaction Amount divergente.");
 
   const merchantAccount = parseTlv(fields.get("26")?.value ?? "");
   errors.push(...merchantAccount.errors.map((error) => `Campo 26: ${error}`));
-  const merchantFields = new Map(merchantAccount.fields.map((field) => [field.id, field]));
-  if (merchantFields.get("00")?.value !== "br.gov.bcb.pix") errors.push("GUI Pix inválido no campo 26.00.");
-  if (merchantFields.get("01")?.value !== expected.key) errors.push("Chave Pix divergente no campo 26.01.");
+  const merchantFields = new Map(
+    merchantAccount.fields.map((field) => [field.id, field]),
+  );
+  if (merchantFields.get("00")?.value !== "br.gov.bcb.pix")
+    errors.push("GUI Pix inválido no campo 26.00.");
+  if (merchantFields.get("01")?.value !== expected.key)
+    errors.push("Chave Pix divergente no campo 26.01.");
 
   const additionalData = parseTlv(fields.get("62")?.value ?? "");
   errors.push(...additionalData.errors.map((error) => `Campo 62: ${error}`));
-  const additionalFields = new Map(additionalData.fields.map((field) => [field.id, field]));
-  if (additionalFields.get("05")?.value !== "***") errors.push("Txid inválido no campo 62.05.");
+  const additionalFields = new Map(
+    additionalData.fields.map((field) => [field.id, field]),
+  );
+  // if (additionalFields.get("05")?.value !== "***") errors.push("Txid inválido no campo 62.05.");
+  const txid = additionalFields.get("05")?.value;
+
+  if (!txid || !/^[a-zA-Z0-9]{1,25}$/.test(txid)) {
+    errors.push("Txid inválido no campo 62.05.");
+  }
 
   const crcField = fields.get("63");
   const crcInput = payload.slice(0, -4);
@@ -151,13 +182,45 @@ export function normalizePixKeyForBRCode(key: string): string {
   return key;
 }
 
+export function generatePixTXID(): string {
+  const now = new Date();
+
+  const dateTime = [
+    String(now.getFullYear()).slice(-2),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+    String(now.getHours()).padStart(2, "0"),
+    String(now.getMinutes()).padStart(2, "0"),
+    String(now.getSeconds()).padStart(2, "0"),
+  ].join("");
+
+  const bytes = crypto.getRandomValues(new Uint8Array(7));
+
+  const random = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 13)
+    .toUpperCase();
+
+  return `${dateTime}${random}`;
+}
+
+export interface PixPaylodResult {
+  payload: string;
+  txid: string;
+}
+
 export function buildPixPayload({
   key,
   amount,
   merchantName,
   merchantCity,
   txid = "***",
-}: PixPayloadParams): string {
+}: PixPayloadParams): PixPaylodResult {
+  if (!/^[a-zA-Z0-9]{1,25}$/.test(txid)) {
+    throw new Error("TXID deve conter entre 1 e 25 caracteres alfanuméricos.");
+  }
+
   const brCodeKey = normalizePixKeyForBRCode(key);
   const merchantAccount = tlv("00", "br.gov.bcb.pix") + tlv("01", brCodeKey);
 
@@ -191,5 +254,8 @@ export function buildPixPayload({
     throw new Error(`BR Code Pix inválido: ${validation.errors.join(" ")}`);
   }
 
-  return result;
+  return {
+    payload: result,
+    txid: txid,
+  };
 }
