@@ -327,8 +327,11 @@ const Checkout = () => {
     const lines: string[] = [];
     lines.push("🛒 *NOVO PEDIDO - OJUARA SUPLEMENTOS*");
     lines.push("");
-    lines.push(`• Identificador PIX: ${pixData.txid}`);
-    lines.push("");
+    if (payment === "pix") {
+      lines.push(`• Identificador PIX: ${pixData.txid}`);
+      lines.push("");
+    }
+    // lines.push(`• Identificador PIX: ${pixData.txid}`);
     lines.push("👤 *Cliente*");
     lines.push(`• Nome: ${name}`);
     lines.push(`• Telefone: ${phone}`);
